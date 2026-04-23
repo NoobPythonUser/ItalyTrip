@@ -1,453 +1,188 @@
 
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap');
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'DM Sans',sans-serif;background:var(--color-background-tertiary);color:var(--color-text-primary)}
-  .wrap{max-width:700px;margin:0 auto;padding:1.5rem 1rem 3rem}
-  .hero{text-align:center;padding:2rem 0 1.5rem}
-  .hero-flag{font-size:32px;margin-bottom:8px}
-  .hero h1{font-family:'Playfair Display',serif;font-size:28px;font-weight:600;letter-spacing:-.5px;margin-bottom:4px}
-  .hero p{font-size:13px;color:var(--color-text-secondary);letter-spacing:.5px;text-transform:uppercase}
-  .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.5rem}
-  .stat{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:.9rem .8rem;text-align:center}
-  .stat-num{font-size:22px;font-weight:500;line-height:1}
-  .stat-lbl{font-size:11px;color:var(--color-text-secondary);margin-top:5px;text-transform:uppercase;letter-spacing:.4px}
-  .tabs{display:flex;gap:6px;margin-bottom:1.2rem;flex-wrap:wrap}
-  .tab{padding:6px 14px;border-radius:20px;font-size:13px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
-  .tab.active{background:var(--color-text-primary);color:var(--color-background-primary);border-color:var(--color-text-primary)}
-  .section{display:none}
-  .section.visible{display:block}
-  .day-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);margin-bottom:12px;overflow:hidden}
-  .day-header{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:0.5px solid var(--color-border-tertiary);cursor:pointer;justify-content:space-between}
-  .day-meta{display:flex;align-items:center;gap:10px}
-  .city-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-  .rome-dot{background:#D85A30}
-  .florence-dot{background:#1D9E75}
-  .milan-dot{background:#378ADD}
-  .day-title{font-size:14px;font-weight:500}
-  .day-date{font-size:12px;color:var(--color-text-secondary)}
-  .chevron{font-size:12px;color:var(--color-text-tertiary);transition:transform .2s}
-  .chevron.open{transform:rotate(180deg)}
-  .day-body{padding:12px 14px 14px;display:none}
-  .day-body.open{display:block}
-  .activity-list{list-style:none}
-  .activity-item{display:flex;align-items:flex-start;gap:8px;padding:5px 0;font-size:13px;border-bottom:0.5px solid var(--color-border-tertiary)}
-  .activity-item:last-child{border-bottom:none}
-  .act-icon{font-size:14px;width:20px;flex-shrink:0;margin-top:1px}
-  .act-text{color:var(--color-text-primary);line-height:1.4}
-  .act-note{font-size:11px;color:var(--color-text-secondary);margin-top:2px}
-  .badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500;margin-left:6px;vertical-align:middle}
-  .badge-booked{background:#EAF3DE;color:#3B6D11}
-  .badge-pending{background:#FAEEDA;color:#854F0B}
-  .badge-tbd{background:#F1EFE8;color:#5F5E5A}
-  .flight-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px;margin-bottom:10px}
-  .flight-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
-  .flight-city{font-size:18px;font-weight:500}
-  .flight-code{font-size:11px;color:var(--color-text-secondary)}
-  .flight-line{flex:1;border-top:1px dashed var(--color-border-secondary);margin:0 10px;position:relative}
-  .flight-plane{position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:14px}
-  .flight-info{font-size:11px;color:var(--color-text-secondary);margin-top:8px;display:flex;gap:16px}
-  .flight-info span{display:flex;align-items:center;gap:4px}
-  .hotel-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px;margin-bottom:10px;display:flex;gap:12px}
-  .hotel-icon-wrap{width:44px;height:44px;border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-  .hotel-city-rome{background:#FAECE7}
-  .hotel-city-florence{background:#E1F5EE}
-  .hotel-city-milan{background:#E6F1FB}
-  .hotel-name{font-size:14px;font-weight:500;margin-bottom:3px}
-  .hotel-addr{font-size:12px;color:var(--color-text-secondary);line-height:1.4}
-  .hotel-ph{font-size:11px;color:var(--color-text-tertiary);margin-top:4px}
-  .hotel-dates{font-size:11px;background:var(--color-background-secondary);display:inline-block;padding:2px 8px;border-radius:10px;margin-top:6px}
-  .timeline-wrap{position:relative;padding-left:24px}
-  .timeline-line{position:absolute;left:7px;top:0;bottom:0;width:1.5px;background:var(--color-border-secondary)}
-  .tl-item{position:relative;margin-bottom:14px}
-  .tl-dot{width:15px;height:15px;border-radius:50%;position:absolute;left:-24px;top:2px;border:2px solid var(--color-background-primary)}
-  .tl-dot-rome{background:#D85A30}
-  .tl-dot-florence{background:#1D9E75}
-  .tl-dot-milan{background:#378ADD}
-  .tl-dot-transit{background:#888780}
-  .tl-date{font-size:11px;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.4px}
-  .tl-text{font-size:13px;font-weight:500;margin-top:1px}
-  .tl-sub{font-size:12px;color:var(--color-text-secondary)}
-  .legend{display:flex;gap:14px;margin-bottom:1rem;flex-wrap:wrap}
-  .legend-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--color-text-secondary)}
-  .legend-dot{width:9px;height:9px;border-radius:50%}
-  .section-head{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;margin-bottom:.8rem;margin-top:.2rem}
-  .where-now{background:linear-gradient(135deg,#FAECE7,#FAEEDA);border:1px solid #F0997B;border-radius:var(--border-radius-lg);padding:14px 16px;margin-bottom:1.2rem;display:flex;align-items:center;gap:12px}
-  .where-pulse{width:12px;height:12px;border-radius:50%;background:#D85A30;flex-shrink:0;box-shadow:0 0 0 3px rgba(216,90,48,.2)}
-  .where-text .where-label{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#854F0B;font-weight:500}
-  .where-text .where-val{font-size:15px;font-weight:500;color:#3C2A1B}
-  .where-text .where-sub{font-size:12px;color:#854F0B;margin-top:2px}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); }
+.wrap { padding: 1.5rem 1rem; max-width: 560px; margin: 0 auto; }
+.title { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 1rem; }
+.input-row { display: flex; gap: 8px; margin-bottom: 1.25rem; }
+.input-row input { flex: 1; }
+.input-row button { padding: 0 1rem; white-space: nowrap; }
+.card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.25rem 1.5rem; }
+.city-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: var(--border-radius-md); margin-bottom: 12px; }
+.city-rome { background: #FAEEDA; color: #854F0B; }
+.city-florence { background: #EAF3DE; color: #3B6D11; }
+.city-milan { background: #E6F1FB; color: #185FA5; }
+.city-travel { background: #EEEDFE; color: #3C3489; }
+.city-mumbai { background: #F1EFE8; color: #5F5E5A; }
+.activity-name { font-size: 20px; font-weight: 500; color: var(--color-text-primary); line-height: 1.3; margin-bottom: 6px; }
+.activity-time { font-size: 13px; color: var(--color-text-secondary); margin-bottom: 14px; }
+.divider { border: none; border-top: 0.5px solid var(--color-border-tertiary); margin: 12px 0; }
+.meta-row { display: flex; gap: 16px; flex-wrap: wrap; }
+.meta-item { flex: 1; min-width: 100px; }
+.meta-label { font-size: 11px; color: var(--color-text-tertiary); margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.04em; }
+.meta-val { font-size: 13px; color: var(--color-text-primary); font-weight: 500; }
+.travel-route { font-size: 18px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+.meal-pill { display: inline-flex; align-items: center; font-size: 12px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 3px 10px; color: var(--color-text-secondary); margin-top: 10px; }
+.empty { text-align: center; padding: 2rem; color: var(--color-text-tertiary); font-size: 14px; }
+.next-hint { margin-top: 12px; padding: 10px 14px; background: var(--color-background-secondary); border-radius: var(--border-radius-md); font-size: 12px; color: var(--color-text-secondary); }
+.next-hint strong { color: var(--color-text-primary); font-weight: 500; }
 </style>
-
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <div class="wrap">
-  <div class="hero">
-    <div class="hero-flag">🇮🇹</div>
-    <h1>Italy Trip 2026</h1>
-    <p>Apr 24 – May 5 · Rome · Florence · Milan</p>
+  <h2 class="sr-only">Italy trip tracker — enter a date and time to see your current activity</h2>
+  <p class="title">Italy trip tracker · Apr 24 – May 5, 2026</p>
+  <div class="input-row">
+    <input type="datetime-local" id="dt" value="2026-04-24T20:00" min="2026-04-23T00:00" max="2026-05-05T23:59" />
+    <button onclick="lookup()">Check</button>
   </div>
-
-  <div id="where-now-banner" class="where-now" style="display:none">
-    <div class="where-pulse"></div>
-    <div class="where-text">
-      <div class="where-label">📍 Right now</div>
-      <div class="where-val" id="where-city">—</div>
-      <div class="where-sub" id="where-detail">—</div>
-    </div>
-  </div>
-
-  <div class="stat-row">
-    <div class="stat"><div class="stat-num">12</div><div class="stat-lbl">Days</div></div>
-    <div class="stat"><div class="stat-num">3</div><div class="stat-lbl">Cities</div></div>
-    <div class="stat"><div class="stat-num">33</div><div class="stat-lbl">Spots</div></div>
-    <div class="stat"><div class="stat-num">2</div><div class="stat-lbl">Train rides</div></div>
-  </div>
-
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('timeline')">Timeline</button>
-    <button class="tab" onclick="switchTab('days')">Daily plan</button>
-    <button class="tab" onclick="switchTab('flights')">Flights & trains</button>
-    <button class="tab" onclick="switchTab('hotels')">Hotels</button>
-  </div>
-
-  <div id="sec-timeline" class="section visible">
-    <div class="section-head">Trip at a glance</div>
-    <div class="legend">
-      <div class="legend-item"><div class="legend-dot" style="background:#D85A30"></div>Rome</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#1D9E75"></div>Florence</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#378ADD"></div>Milan</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#888780"></div>Transit</div>
-    </div>
-    <div class="timeline-wrap">
-      <div class="timeline-line"></div>
-      <div class="tl-item"><div class="tl-dot tl-dot-transit"></div><div class="tl-date">23 Apr Thu</div><div class="tl-text">Depart Mumbai</div><div class="tl-sub">BOM → JED (2:50 AM) · IndiGo 6E 17</div></div>
-      <div class="tl-item"><div class="tl-dot tl-dot-transit"></div><div class="tl-date">24 Apr Fri</div><div class="tl-text">Transit Jeddah → Istanbul → Rome</div><div class="tl-sub">IST → FCO departs 16:45, arrives 18:25 · 6E 4209</div></div>
-      <div class="tl-item"><div class="tl-dot tl-dot-rome"></div><div class="tl-date">24–26 Apr</div><div class="tl-text">Rome</div><div class="tl-sub">Spanish Steps · Vatican · Colosseum · Pantheon · Trevi Fountain</div></div>
-      <div class="tl-item"><div class="tl-dot tl-dot-transit"></div><div class="tl-date">27 Apr Mon</div><div class="tl-text">Train to Florence</div><div class="tl-sub">Roma Tiburtina 9:35 AM → Firenze S.M.Novella 11:01 AM · FR 9308</div></div>
-      <div class="tl-item"><div class="tl-dot tl-dot-florence"></div><div class="tl-date">27–29 Apr</div><div class="tl-text">Florence</div><div class="tl-sub">Duomo · Uffizi · Pisa day trip · Siena day trip · Ponte Vecchio</div></div>
-      <div class="tl-item"><div class="tl-dot tl-dot-transit"></div><div class="tl-date">30 Apr Thu</div><div class="tl-text">Train to Milan</div><div class="tl-sub">Firenze S.M.Novella 9:10 AM → Milano Rogoredo 10:54 AM · FR 9304</div></div>
-      <div class="tl-item"><div class="tl-dot tl-dot-milan"></div><div class="tl-date">30 Apr – 3 May</div><div class="tl-text">Milan</div><div class="tl-sub">Duomo · Da Vinci · Lake Como day trip · Serravalle shopping</div></div>
-      <div class="tl-item"><div class="tl-dot tl-dot-transit"></div><div class="tl-date">4 May Mon</div><div class="tl-text">Depart Milan</div><div class="tl-sub">MXP → IST 10:40 AM · then IST → BOM 17:55 · 6E 18</div></div>
-      <div class="tl-item"><div class="tl-dot tl-dot-transit"></div><div class="tl-date">5 May Tue</div><div class="tl-text">Arrive Mumbai</div><div class="tl-sub">Landing 06:40 AM · Home !</div></div>
-    </div>
-  </div>
-
-  <div id="sec-days" class="section">
-    <div class="section-head">Day-by-day plan</div>
-
-    <div class="day-card">
-      <div class="day-header" onclick="toggleDay(this)">
-        <div class="day-meta"><div class="city-dot rome-dot"></div><div><div class="day-title">Arrive in Rome · Spanish Steps & Trastevere</div><div class="day-date">Friday, 24 April</div></div></div>
-        <span class="chevron">▼</span>
-      </div>
-      <div class="day-body">
-        <ul class="activity-list">
-          <li class="activity-item"><span class="act-icon">✈️</span><div><div class="act-text">Arrive FCO 18:25 · Flight 6E 4209</div></div></li>
-          <li class="activity-item"><span class="act-icon">🏛️</span><div><div class="act-text">Spanish Steps</div></div></li>
-          <li class="activity-item"><span class="act-icon">⛲</span><div><div class="act-text">Trevi Fountain (evening stroll)</div></div></li>
-          <li class="activity-item"><span class="act-icon">🍝</span><div><div class="act-text">Dinner at Trastevere</div></div></li>
-          <li class="activity-item"><span class="act-icon">🏨</span><div><div class="act-text">Hotel Condotti, 37 Mario De' Fiori St</div></div></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="day-card">
-      <div class="day-header" onclick="toggleDay(this)">
-        <div class="day-meta"><div class="city-dot rome-dot"></div><div><div class="day-title">Vatican Day — St. Peter's, Sistine Chapel & Navona</div><div class="day-date">Saturday, 25 April</div></div></div>
-        <span class="chevron">▼</span>
-      </div>
-      <div class="day-body">
-        <ul class="activity-list">
-          <li class="activity-item"><span class="act-icon">🍞</span><div><div class="act-text">Breakfast near the hotel</div></div></li>
-          <li class="activity-item"><span class="act-icon">⛪</span><div><div class="act-text">St. Peter's Basilica<span class="badge badge-booked">Booked 10:15 AM · ₹29,430</span></div></div></li>
-          <li class="activity-item"><span class="act-icon">🎨</span><div><div class="act-text">Sistine Chapel & Vatican Museums</div></div></li>
-          <li class="activity-item"><span class="act-icon">🛍️</span><div><div class="act-text">Via Condotti (luxury shopping street)</div></div></li>
-          <li class="activity-item"><span class="act-icon">🍦</span><div><div class="act-text">Lunch and Gelato around Vatican</div></div></li>
-          <li class="activity-item"><span class="act-icon">🏛️</span><div><div class="act-text">Piazza Navona</div></div></li>
-          <li class="activity-item"><span class="act-icon">🏰</span><div><div class="act-text">Castel Sant'Angelo</div></div></li>
-          <li class="activity-item"><span class="act-icon">⛪</span><div><div class="act-text">Basilica of San Lorenzo</div></div></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="day-card">
-      <div class="day-header" onclick="toggleDay(this)">
-        <div class="day-meta"><div class="city-dot rome-dot"></div><div><div class="day-title">Colosseum, Forum & Pantheon · Roof top dinner</div><div class="day-date">Sunday, 26 April</div></div></div>
-        <span class="chevron">▼</span>
-      </div>
-      <div class="day-body">
-        <ul class="activity-list">
-          <li class="activity-item"><span class="act-icon">🍞</span><div><div class="act-text">Breakfast near the hotel</div></div></li>
-          <li class="activity-item"><span class="act-icon">🏟️</span><div><div class="act-text">Colosseum, Palatine Hill, Roman Forum<span class="badge badge-pending">Not booked</span></div></div></li>
-          <li class="activity-item"><span class="act-icon">🏛️</span><div><div class="act-text">Monument of Vittorio Emanuele II</div></div></li>
-          <li class="activity-item"><span class="act-icon">🍦</span><div><div class="act-text">Lunch & Gelato around Colosseum / Trevi</div></div></li>
-          <li class="activity-item"><span class="act-icon">⛲</span><div><div class="act-text">Trevi Fountain</div></div></li>
-          <li class="activity-item"><span class="act-icon">🏛️</span><div><div class="act-text">Pantheon<span class="badge badge-tbd">To be booked</span></div></div></li>
-          <li class="activity-item"><span class="act-icon">🌇</span><div><div class="act-text">Roof top dinner · then Derrier / Race Club</div></div></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="day-card">
-      <div class="day-header" onclick="toggleDay(this)">
-        <div class="day-meta"><div class="city-dot florence-dot"></div><div><div class="day-title">Train to Florence · Pisa & San Gimignano day trip</div><div class="day-date">Monday, 27 April</div></div></div>
-        <span class="chevron">▼</span>
-      </div>
-      <div class="day-body">
-        <ul class="activity-list">
-          <li class="activity-item"><span class="act-icon">🍞</span><div><div class="act-text">Breakfast near the hotel, check out</div></div></li>
-          <li class="activity-item"><span class="act-icon">🚄</span><div><div class="act-text">Train FR 9308 · Roma Tiburtina 9:35 → Firenze 11:01</div></div></li>
-          <li class="activity-item"><span class="act-icon">🗼</span><div><div class="act-text">Half day trip: San Gimignano & Pisa<span class="badge badge-tbd">To be booked</span></div></div></li>
-          <li class="activity-item"><span class="act-icon">🍽️</span><div><div class="act-text">Lunch at Pisa</div></div></li>
-          <li class="activity-item"><span class="act-icon">🏨</span><div><div class="act-text">Check-in: Ruby Bea, Piazza della Libertà 16, Florence</div></div></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="day-card">
-      <div class="day-header" onclick="toggleDay(this)">
-        <div class="day-meta"><div class="city-dot florence-dot"></div><div><div class="day-title">Duomo, Uffizi, Accademia & Ponte Vecchio sunset</div><div class="day-date">Tuesday, 28 April</div></div></div>
-        <span class="chevron">▼</span>
-      </div>
-      <div class="day-body">
-        <ul class="activity-list">
-          <li class="activity-item"><span class="act-icon">🍞</span><div><div class="act-text">Breakfast near the hotel</div></div></li>
-          <li class="activity-item"><span class="act-icon">⛪</span><div><div class="act-text">Brunelleschi's Dome</div></div></li>
-          <li class="activity-item"><span class="act-icon">🏛️</span><div><div class="act-text">Piazza del Duomo · Florence Cathedral</div></div></li>
-          <li class="activity-item"><span class="act-icon">🎨</span><div><div class="act-text">Uffizi Gallery<span class="badge badge-booked">Booked 11:00 AM</span></div></div></li>
-          <li class="activity-item"><span class="act-icon">🗿</span><div><div class="act-text">Accademia Gallery — Michelangelo's David<span class="badge badge-booked">Booked</span></div></div></li>
-          <li class="activity-item"><span class="act-icon">🏰</span><div><div class="act-text">Palazzo Vecchio · Piazza della Signoria</div></div></li>
-          <li class="activity-item"><span class="act-icon">🌅</span><div><div class="act-text">Sunset at Ponte Vecchio / Piazzale Michelangelo</div></div></li>
-          <li class="activity-item"><span class="act-icon">🍷</span><div><div class="act-text">Dinner at Oltrarno</div></div></li>
-          <li class="activity-item"><span class="act-icon">🏛️</span><div><div class="act-text">Pitti Palace · Boboli Gardens</div></div></li>
-          <li class="activity-item"><span class="act-icon">🛒</span><div><div class="act-text">San Lorenzo Market · Via Santo Spirito artisans</div></div></li>
-          <li class="activity-item"><span class="act-icon">🥩</span><div><div class="act-text">Bistecca alla Fiorentina at a rooftop bar</div></div></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="day-card">
-      <div class="day-header" onclick="toggleDay(this)">
-        <div class="day-meta"><div class="city-dot florence-dot"></div><div><div class="day-title">Siena day trip · Speakeasy evening</div><div class="day-date">Wednesday, 29 April</div></div></div>
-        <span class="chevron">▼</span>
-      </div>
-      <div class="day-body">
-        <ul class="activity-list">
-          <li class="activity-item"><span class="act-icon">🍞</span><div><div class="act-text">Breakfast near the hotel</div></div></li>
-          <li class="activity-item"><span class="act-icon">🏙️</span><div><div class="act-text">Half day trip to Siena<span class="badge badge-tbd">To be booked</span></div></div></li>
-          <li class="activity-item"><span class="act-icon">🍽️</span><div><div class="act-text">Lunch at Siena</div></div></li>
-          <li class="activity-item"><span class="act-icon">🍹</span><div><div class="act-text">Evening: Chill at Speakeasy Bar · dinner TBD</div></div></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="day-card">
-      <div class="day-header" onclick="toggleDay(this)">
-        <div class="day-meta"><div class="city-dot milan-dot"></div><div><div class="day-title">Train to Milan · Duomo & Galleria</div><div class="day-date">Thursday, 30 April</div></div></div>
-        <span class="chevron">▼</span>
-      </div>
-      <div class="day-body">
-        <ul class="activity-list">
-          <li class="activity-item"><span class="act-icon">🍞</span><div><div class="act-text">Breakfast near the hotel, check out</div></div></li>
-          <li class="activity-item"><span class="act-icon">🚄</span><div><div class="act-text">Train FR 9304 · Firenze 9:10 → Milano Rogoredo 10:54</div></div></li>
-          <li class="activity-item"><span class="act-icon">🏛️</span><div><div class="act-text">Piazza del Duomo · Milan Cathedral</div></div></li>
-          <li class="activity-item"><span class="act-icon">🛍️</span><div><div class="act-text">Galleria Vittorio Emanuele II</div></div></li>
-          <li class="activity-item"><span class="act-icon">🍽️</span><div><div class="act-text">Lunch on the go · Dinner rooftop TBD</div></div></li>
-          <li class="activity-item"><span class="act-icon">🏨</span><div><div class="act-text">Check-in: Milan Marriott Hotel, Via Washington 66</div></div></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="day-card">
-      <div class="day-header" onclick="toggleDay(this)">
-        <div class="day-meta"><div class="city-dot milan-dot"></div><div><div class="day-title">Da Vinci, Sforza Castle & Navigli dinner</div><div class="day-date">Friday, 1 May</div></div></div>
-        <span class="chevron">▼</span>
-      </div>
-      <div class="day-body">
-        <ul class="activity-list">
-          <li class="activity-item"><span class="act-icon">🍞</span><div><div class="act-text">Breakfast near the hotel</div></div></li>
-          <li class="activity-item"><span class="act-icon">🎨</span><div><div class="act-text">Santa Maria Delle Grazie (The Last Supper)</div></div></li>
-          <li class="activity-item"><span class="act-icon">🏰</span><div><div class="act-text">Sforza Castle</div></div></li>
-          <li class="activity-item"><span class="act-icon">🌳</span><div><div class="act-text">Walk through Parco Sempione</div></div></li>
-          <li class="activity-item"><span class="act-icon">🎭</span><div><div class="act-text">Afternoon: Brera District exploration</div></div></li>
-          <li class="activity-item"><span class="act-icon">🍷</span><div><div class="act-text">Dinner at Navigli District</div></div></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="day-card">
-      <div class="day-header" onclick="toggleDay(this)">
-        <div class="day-meta"><div class="city-dot milan-dot"></div><div><div class="day-title">Full day — Lake Como</div><div class="day-date">Saturday, 2 May</div></div></div>
-        <span class="chevron">▼</span>
-      </div>
-      <div class="day-body">
-        <ul class="activity-list">
-          <li class="activity-item"><span class="act-icon">🍞</span><div><div class="act-text">Breakfast near the hotel</div></div></li>
-          <li class="activity-item"><span class="act-icon">🏞️</span><div><div class="act-text">Full day trip to Lake Como<span class="badge badge-tbd">To be booked</span></div></div></li>
-          <li class="activity-item"><span class="act-icon">🍽️</span><div><div class="act-text">Lunch at Lake Como · Dinner back in Milan</div></div></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="day-card">
-      <div class="day-header" onclick="toggleDay(this)">
-        <div class="day-meta"><div class="city-dot milan-dot"></div><div><div class="day-title">Shopping day — Serravalle Outlet</div><div class="day-date">Sunday, 3 May</div></div></div>
-        <span class="chevron">▼</span>
-      </div>
-      <div class="day-body">
-        <ul class="activity-list">
-          <li class="activity-item"><span class="act-icon">🍞</span><div><div class="act-text">Breakfast near the hotel</div></div></li>
-          <li class="activity-item"><span class="act-icon">🛍️</span><div><div class="act-text">Full day shopping — Serravalle Outlet Mall<span class="badge badge-tbd">To be booked</span></div></div></li>
-          <li class="activity-item"><span class="act-icon">🍽️</span><div><div class="act-text">Lunch at Serravalle · Dinner in Milan</div></div></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="day-card">
-      <div class="day-header" onclick="toggleDay(this)">
-        <div class="day-meta"><div class="city-dot transit-dot" style="background:#888780"></div><div><div class="day-title">Depart Milan → Mumbai</div><div class="day-date">Monday, 4 May · Arrive Tuesday 5 May</div></div></div>
-        <span class="chevron">▼</span>
-      </div>
-      <div class="day-body">
-        <ul class="activity-list">
-          <li class="activity-item"><span class="act-icon">🍞</span><div><div class="act-text">Last breakfast in Milan</div></div></li>
-          <li class="activity-item"><span class="act-icon">✈️</span><div><div class="act-text">MXP → IST departs 10:40 · arrives 14:35 · 6E 4216</div></div></li>
-          <li class="activity-item"><span class="act-icon">✈️</span><div><div class="act-text">IST → BOM departs 17:55 · 6E 18</div></div></li>
-          <li class="activity-item"><span class="act-icon">🏠</span><div><div class="act-text">Arrive Mumbai 06:40 AM on 5 May · Trip ends!</div></div></li>
-        </ul>
-      </div>
-    </div>
-  </div>
-
-  <div id="sec-flights" class="section">
-    <div class="section-head">Flights</div>
-    <div class="flight-card">
-      <div class="flight-row">
-        <div><div class="flight-city">BOM</div><div class="flight-code">Mumbai</div></div>
-        <div class="flight-line"><span class="flight-plane">✈</span></div>
-        <div style="text-align:right"><div class="flight-city">JED</div><div class="flight-code">Jeddah</div></div>
-      </div>
-      <div class="flight-info"><span>📅 23 Apr (Thu)</span><span>🕑 2:50 AM</span><span>✈ 6E 17 · PNR: IE4VHX</span></div>
-    </div>
-    <div class="flight-card">
-      <div class="flight-row">
-        <div><div class="flight-city">JED</div><div class="flight-code">Jeddah</div></div>
-        <div class="flight-line"><span class="flight-plane">✈</span></div>
-        <div style="text-align:right"><div class="flight-city">IST</div><div class="flight-code">Istanbul</div></div>
-      </div>
-      <div class="flight-info"><span>📅 24 Apr (Fri)</span><span>🕑 Arrives 11:05</span><span>✈ 6E 17 · PNR: IE4VHX</span></div>
-    </div>
-    <div class="flight-card">
-      <div class="flight-row">
-        <div><div class="flight-city">IST</div><div class="flight-code">Istanbul</div></div>
-        <div class="flight-line"><span class="flight-plane">✈</span></div>
-        <div style="text-align:right"><div class="flight-city">FCO</div><div class="flight-code">Rome</div></div>
-      </div>
-      <div class="flight-info"><span>📅 24 Apr (Fri)</span><span>🕑 16:45 → 18:25</span><span>✈ 6E 4209 · PNR: RN6VXW</span></div>
-    </div>
-    <div class="flight-card">
-      <div class="flight-row">
-        <div><div class="flight-city">MXP</div><div class="flight-code">Milan</div></div>
-        <div class="flight-line"><span class="flight-plane">✈</span></div>
-        <div style="text-align:right"><div class="flight-city">IST</div><div class="flight-code">Istanbul</div></div>
-      </div>
-      <div class="flight-info"><span>📅 4 May (Mon)</span><span>🕑 10:40 → 14:35</span><span>✈ 6E 4216</span></div>
-    </div>
-    <div class="flight-card">
-      <div class="flight-row">
-        <div><div class="flight-city">IST</div><div class="flight-code">Istanbul</div></div>
-        <div class="flight-line"><span class="flight-plane">✈</span></div>
-        <div style="text-align:right"><div class="flight-city">BOM</div><div class="flight-code">Mumbai</div></div>
-      </div>
-      <div class="flight-info"><span>📅 4–5 May</span><span>🕑 17:55 → 06:40 (+1)</span><span>✈ 6E 18</span></div>
-    </div>
-
-    <div class="section-head" style="margin-top:1.5rem">Trains</div>
-    <div class="flight-card" style="border-left:3px solid #1D9E75">
-      <div class="flight-row">
-        <div><div class="flight-city" style="font-size:14px">Roma Tiburtina</div></div>
-        <div class="flight-line"><span class="flight-plane">🚄</span></div>
-        <div style="text-align:right"><div class="flight-city" style="font-size:14px">Firenze S.M.N.</div></div>
-      </div>
-      <div class="flight-info"><span>📅 27 Apr (Mon)</span><span>🕑 9:35 → 11:01</span><span>🚄 FR 9308 · PNR: V4LHZ5</span></div>
-    </div>
-    <div class="flight-card" style="border-left:3px solid #378ADD">
-      <div class="flight-row">
-        <div><div class="flight-city" style="font-size:14px">Firenze S.M.N.</div></div>
-        <div class="flight-line"><span class="flight-plane">🚄</span></div>
-        <div style="text-align:right"><div class="flight-city" style="font-size:14px">Milano Rogoredo</div></div>
-      </div>
-      <div class="flight-info"><span>📅 30 Apr (Thu)</span><span>🕑 9:10 → 10:54</span><span>🚄 FR 9304 · PNR: V4MSAN</span></div>
-    </div>
-  </div>
-
-  <div id="sec-hotels" class="section">
-    <div class="section-head">Hotels</div>
-    <div class="hotel-card">
-      <div class="hotel-icon-wrap hotel-city-rome">🏛️</div>
-      <div>
-        <div class="hotel-name">Hotel Condotti</div>
-        <div class="hotel-addr">37 Mario De' Fiori Street, Rome 00187, Italy</div>
-        <div class="hotel-ph">📞 (866) 238-4218</div>
-        <div class="hotel-dates">24 Apr – 27 Apr · 3 nights in Rome</div>
-      </div>
-    </div>
-    <div class="hotel-card">
-      <div class="hotel-icon-wrap hotel-city-florence">🌸</div>
-      <div>
-        <div class="hotel-name">Ruby Bea</div>
-        <div class="hotel-addr">Piazza della Libertà 16, 50129 Florence, Italy</div>
-        <div class="hotel-ph">📞 +39 055 997 0270</div>
-        <div class="hotel-dates">27 Apr – 30 Apr · 3 nights in Florence</div>
-      </div>
-    </div>
-    <div class="hotel-card">
-      <div class="hotel-icon-wrap hotel-city-milan">🏙️</div>
-      <div>
-        <div class="hotel-name">Milan Marriott Hotel</div>
-        <div class="hotel-addr">Via Washington 66, Milan 20146, Italy</div>
-        <div class="hotel-ph">📞 +39 02 48521</div>
-        <div class="hotel-dates">30 Apr – 4 May · 4 nights in Milan</div>
-      </div>
-    </div>
-  </div>
+  <div id="result"></div>
 </div>
 
 <script>
-function switchTab(name){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.section').forEach(s=>s.classList.remove('visible'));
-  event.target.classList.add('active');
-  document.getElementById('sec-'+name).classList.add('visible');
-}
-function toggleDay(header){
-  const body=header.nextElementSibling;
-  const chev=header.querySelector('.chevron');
-  const open=body.classList.toggle('open');
-  chev.classList.toggle('open',open);
+const IST = "Asia/Kolkata";
+
+const events = [
+  { ts: "2026-04-23T02:50", type:"flight", from:"Mumbai", to:"Jeddah", flight:"6E 17", pnr:"IE4VHX", dep:"2:50 AM", arr:"—", city:"travel" },
+  { ts: "2026-04-24T11:05", type:"flight", from:"Jeddah", to:"Istanbul", flight:"6E 17", pnr:"IE4VHX", dep:"—", arr:"11:05", city:"travel" },
+  { ts: "2026-04-24T16:45", type:"flight", from:"Istanbul", to:"Rome", flight:"6E 4209", pnr:"RN6VXW", dep:"16:45", arr:"18:25", city:"travel" },
+  { ts: "2026-04-24T18:25", type:"activity", city:"Rome", place:"Arrive in Rome – check in to Hotel Condotti", meal:"Dinner at Trastevere", note:"Hotel Condotti, 37 Mario De' Fiori Street" },
+  { ts: "2026-04-24T20:00", type:"activity", city:"Rome", place:"Trastevere dinner", meal:"Dinner at Trastevere", note:"Evening stroll around Spanish Steps, Trevi Fountain" },
+  { ts: "2026-04-25T08:00", type:"activity", city:"Rome", place:"Breakfast near hotel", meal:"Breakfast near/at hotel", note:"" },
+  { ts: "2026-04-25T10:15", type:"activity", city:"Rome", place:"Vatican Museums, Sistine Chapel & St. Peter's Basilica", meal:"Lunch & Gelato around Vatican", note:"Booked 10:15 AM · INR 29,430" },
+  { ts: "2026-04-25T14:00", type:"activity", city:"Rome", place:"Via Condotti shopping", meal:"", note:"" },
+  { ts: "2026-04-25T16:00", type:"activity", city:"Rome", place:"Piazza Navona", meal:"", note:"" },
+  { ts: "2026-04-25T17:30", type:"activity", city:"Rome", place:"Castel Sant'Angelo", meal:"", note:"" },
+  { ts: "2026-04-25T19:00", type:"activity", city:"Rome", place:"Basilica of San Lorenzo", meal:"", note:"" },
+  { ts: "2026-04-26T08:00", type:"activity", city:"Rome", place:"Breakfast near hotel", meal:"Breakfast near/at hotel", note:"" },
+  { ts: "2026-04-26T10:00", type:"activity", city:"Rome", place:"Colosseum, Palatine Hill & Roman Forum", meal:"Lunch & Gelato around Colosseum/Trevi", note:"Not yet booked" },
+  { ts: "2026-04-26T14:00", type:"activity", city:"Rome", place:"Monument of Vittorio Emanuele II", meal:"", note:"" },
+  { ts: "2026-04-26T15:30", type:"activity", city:"Rome", place:"Trevi Fountain", meal:"", note:"" },
+  { ts: "2026-04-26T17:00", type:"activity", city:"Rome", place:"Pantheon", meal:"", note:"To be booked" },
+  { ts: "2026-04-26T20:00", type:"activity", city:"Rome", place:"Rooftop dinner followed by Derrier / Race Club", meal:"Dinner at a Roof Top", note:"" },
+  { ts: "2026-04-27T08:00", type:"activity", city:"Rome", place:"Breakfast near hotel before Florence train", meal:"Breakfast near/at hotel", note:"" },
+  { ts: "2026-04-27T09:35", type:"train", from:"Rome Tiburtina", to:"Florence S.M. Novella", train:"FR 9308", pnr:"V4LHZ5", dep:"9:35 AM", arr:"11:01 AM", city:"travel" },
+  { ts: "2026-04-27T11:01", type:"activity", city:"Florence", place:"Arrive Florence – check in to Ruby Bea Hotel", meal:"", note:"Piazza della Libertà 16, Florence" },
+  { ts: "2026-04-27T13:00", type:"activity", city:"Florence", place:"Half day trip to Pisa & San Gimignano", meal:"Lunch at Pisa", note:"To be booked" },
+  { ts: "2026-04-28T08:00", type:"activity", city:"Florence", place:"Breakfast near hotel", meal:"Breakfast near/at hotel", note:"" },
+  { ts: "2026-04-28T09:00", type:"activity", city:"Florence", place:"Uffizi Gallery", meal:"", note:"Booked 11:00 AM" },
+  { ts: "2026-04-28T11:30", type:"activity", city:"Florence", place:"Accademia Gallery – Michelangelo's David", meal:"", note:"Booked" },
+  { ts: "2026-04-28T13:00", type:"activity", city:"Florence", place:"Pitti Palace & Boboli Gardens", meal:"Lunch on the go", note:"" },
+  { ts: "2026-04-28T15:00", type:"activity", city:"Florence", place:"Piazza del Duomo & Brunelleschi's Dome", meal:"", note:"" },
+  { ts: "2026-04-28T16:00", type:"activity", city:"Florence", place:"Walk to Piazza della Signoria & Palazzo Vecchio", meal:"", note:"" },
+  { ts: "2026-04-28T17:30", type:"activity", city:"Florence", place:"Sunset at Ponte Vecchio / Piazzale Michelangelo", meal:"", note:"" },
+  { ts: "2026-04-28T19:00", type:"activity", city:"Florence", place:"San Lorenzo Market for snacks & artisan streets near Via Santo Spirito", meal:"", note:"" },
+  { ts: "2026-04-28T21:00", type:"activity", city:"Florence", place:"Dinner at Oltrarno", meal:"Dinner at Oltrarno", note:"" },
+  { ts: "2026-04-28T22:30", type:"activity", city:"Florence", place:"Bistecca alla Fiorentina rooftop dinner", meal:"Florentine Steak Dinner at Roof Top Bar", note:"" },
+  { ts: "2026-04-29T08:00", type:"activity", city:"Florence", place:"Breakfast near hotel", meal:"Breakfast near/at hotel", note:"" },
+  { ts: "2026-04-29T10:00", type:"activity", city:"Florence", place:"Half day trip to Siena", meal:"Lunch at Siena", note:"To be booked" },
+  { ts: "2026-04-29T18:00", type:"activity", city:"Florence", place:"Dinner – to be decided", meal:"Dinner TBD", note:"" },
+  { ts: "2026-04-29T21:00", type:"activity", city:"Florence", place:"Chill Speakeasy Bar", meal:"", note:"" },
+  { ts: "2026-04-30T08:00", type:"activity", city:"Florence", place:"Breakfast near hotel before Milan train", meal:"Breakfast near/at hotel", note:"" },
+  { ts: "2026-04-30T09:10", type:"train", from:"Florence S.M. Novella", to:"Milano Rogoredo", train:"FR 9304", pnr:"V4MSAN", dep:"9:10 AM", arr:"10:54 AM", city:"travel" },
+  { ts: "2026-04-30T11:00", type:"activity", city:"Milan", place:"Arrive Milan – check in to Milan Marriott Hotel", meal:"", note:"Via Washington 66, Milan" },
+  { ts: "2026-04-30T12:30", type:"activity", city:"Milan", place:"Piazza del Duomo & Milan Cathedral", meal:"Lunch on the go", note:"" },
+  { ts: "2026-04-30T15:00", type:"activity", city:"Milan", place:"Galleria Vittorio Emanuele II", meal:"", note:"INR 15,042" },
+  { ts: "2026-04-30T19:00", type:"activity", city:"Milan", place:"Rooftop dinner – to be decided", meal:"Dinner at Roof Top", note:"" },
+  { ts: "2026-05-01T08:00", type:"activity", city:"Milan", place:"Breakfast near hotel", meal:"Breakfast near/at hotel", note:"" },
+  { ts: "2026-05-01T10:00", type:"activity", city:"Milan", place:"Santa Maria delle Grazie (The Last Supper)", meal:"Lunch on the go", note:"" },
+  { ts: "2026-05-01T12:00", type:"activity", city:"Milan", place:"Sforza Castle & Parco Sempione walk", meal:"Lunch on the go", note:"" },
+  { ts: "2026-05-01T15:00", type:"activity", city:"Milan", place:"Explore Brera District", meal:"", note:"" },
+  { ts: "2026-05-01T20:00", type:"activity", city:"Milan", place:"Dinner at Navigli District", meal:"Dinner at Navigli District", note:"" },
+  { ts: "2026-05-02T08:00", type:"activity", city:"Milan", place:"Breakfast near hotel", meal:"Breakfast near/at hotel", note:"" },
+  { ts: "2026-05-02T09:00", type:"activity", city:"Milan", place:"Full day trip to Lake Como", meal:"Lunch at Lake Como · Dinner in Milan", note:"To be booked" },
+  { ts: "2026-05-03T08:00", type:"activity", city:"Milan", place:"Breakfast near hotel", meal:"Breakfast near/at hotel", note:"" },
+  { ts: "2026-05-03T09:00", type:"activity", city:"Milan", place:"Full day shopping at Serravalle Outlet Mall", meal:"Lunch at Serravalle · Dinner in Milan", note:"To be booked" },
+  { ts: "2026-05-04T08:00", type:"activity", city:"Milan", place:"Breakfast near hotel – last day in Milan", meal:"Breakfast near/at hotel", note:"" },
+  { ts: "2026-05-04T10:40", type:"flight", from:"Milan", to:"Istanbul", flight:"6E 4216", pnr:"", dep:"10:40", arr:"14:35", city:"travel" },
+  { ts: "2026-05-04T17:55", type:"flight", from:"Istanbul", to:"Mumbai", flight:"6E 18", pnr:"", dep:"17:55", arr:"—", city:"travel" },
+  { ts: "2026-05-05T06:40", type:"activity", city:"Mumbai", place:"Arrive Mumbai – back home!", meal:"", note:"Flight 6E 18 lands 06:40" },
+];
+
+function parseLocalTs(str) {
+  const [d, t] = str.split("T");
+  const [y, mo, day] = d.split("-").map(Number);
+  const [h, m] = t.split(":").map(Number);
+  return new Date(y, mo - 1, day, h, m);
 }
 
-function whereAreTheyNow(){
-  const now=new Date();
-  const d=now.getUTCFullYear()*10000+(now.getUTCMonth()+1)*100+now.getUTCDate();
-  const banner=document.getElementById('where-now-banner');
-  const city=document.getElementById('where-city');
-  const detail=document.getElementById('where-detail');
-  let c='',det='';
-  if(d<20260424){c='Still in Mumbai 🇮🇳';det='Departure: 23 Apr 2:50 AM';}
-  else if(d===20260424){c='In transit ✈️';det='BOM → JED → IST → Rome — arriving Rome 18:25';}
-  else if(d>=20260424&&d<=20260426){c='Rome 🏛️';det='Hotel Condotti · 37 Mario De\' Fiori St';}
-  else if(d===20260427){c='Rome → Florence 🚄';det='Train FR 9308 · Arriving Firenze 11:01 AM';}
-  else if(d>=20260427&&d<=20260429){c='Florence 🌸';det='Ruby Bea · Piazza della Libertà 16';}
-  else if(d===20260430){c='Florence → Milan 🚄';det='Train FR 9304 · Arriving Milano 10:54 AM';}
-  else if(d>=20260430&&d<=20260503){c='Milan 🏙️';det='Milan Marriott Hotel · Via Washington 66';}
-  else if(d===20260504){c='Heading home ✈️';det='MXP → IST → BOM';}
-  else if(d===20260505){c='Arriving Mumbai 🏠';det='Landing 06:40 AM — almost home!';}
-  else{c='Trip completed! 🇮🇳';det='Back home in Mumbai';}
-  if(c){banner.style.display='flex';city.textContent=c;detail.textContent=det;}
+function formatDt(dt) {
+  return dt.toLocaleString("en-IN", { weekday:"short", day:"numeric", month:"short", year:"numeric", hour:"2-digit", minute:"2-digit" });
 }
-whereAreTheyNow();
+
+function cityClass(c) {
+  if (c === "Rome") return "city-rome";
+  if (c === "Florence") return "city-florence";
+  if (c === "Milan") return "city-milan";
+  if (c === "travel") return "city-travel";
+  return "city-mumbai";
+}
+
+function cityIcon(c) {
+  if (c === "Rome") return "IT · Rome";
+  if (c === "Florence") return "IT · Florence";
+  if (c === "Milan") return "IT · Milan";
+  if (c === "travel") return "In transit";
+  return "IN · Mumbai";
+}
+
+function nextEvent(idx) {
+  for (let i = idx + 1; i < events.length; i++) {
+    return events[i];
+  }
+  return null;
+}
+
+function lookup() {
+  const inp = document.getElementById("dt").value;
+  if (!inp) return;
+  const sel = parseLocalTs(inp);
+  const res = document.getElementById("result");
+
+  let matchIdx = -1;
+  for (let i = 0; i < events.length; i++) {
+    const ets = parseLocalTs(events[i].ts);
+    if (ets <= sel) matchIdx = i;
+    else break;
+  }
+
+  if (matchIdx === -1) {
+    res.innerHTML = `<div class="card"><p class="empty">Your trip hasn't started yet. Departure from Mumbai is 23 Apr at 2:50 AM.</p></div>`;
+    return;
+  }
+
+  const ev = events[matchIdx];
+  const next = nextEvent(matchIdx);
+  let html = "";
+
+  if (ev.type === "flight" || ev.type === "train") {
+    const icon = ev.type === "flight" ? "✈" : "🚆";
+    const label = ev.type === "flight" ? "Flight" : "Train";
+    html = `
+      <div class="card">
+        <span class="city-badge city-travel">${icon} In transit</span>
+        <div class="travel-route">${ev.from} → ${ev.to}</div>
+        <p class="activity-time">${ev.dep} departure · ${ev.arr} arrival</p>
+        <hr class="divider">
+        <div class="meta-row">
+          <div class="meta-item"><div class="meta-label">${label}</div><div class="meta-val">${ev.flight || ev.train}</div></div>
+          ${ev.pnr ? `<div class="meta-item"><div class="meta-label">PNR</div><div class="meta-val">${ev.pnr}</div></div>` : ""}
+        </div>
+        ${next ? `<div class="next-hint">Next: <strong>${next.type === "flight" || next.type === "train" ? (next.from + " → " + next.to) : next.place}</strong></div>` : ""}
+      </div>`;
+  } else {
+    html = `
+      <div class="card">
+        <span class="city-badge ${cityClass(ev.city)}">${cityIcon(ev.city)}</span>
+        <div class="activity-name">${ev.place}</div>
+        <p class="activity-time">${formatDt(parseLocalTs(ev.ts))}</p>
+        ${ev.note ? `<hr class="divider"><div style="font-size:12px;color:var(--color-text-secondary)">${ev.note}</div>` : ""}
+        ${ev.meal ? `<div class="meal-pill">Meal · ${ev.meal}</div>` : ""}
+        ${next ? `<div class="next-hint">Next: <strong>${next.type === "flight" || next.type === "train" ? ("Transit: " + next.from + " → " + next.to) : next.place}</strong></div>` : ""}
+      </div>`;
+  }
+
+  res.innerHTML = html;
+}
+
+lookup();
 </script>
-
-
-increase font size
