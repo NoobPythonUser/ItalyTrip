@@ -427,24 +427,101 @@ const open=body.classList.toggle('open');
 chev.classList.toggle('open',open);
 }
 
-function whereAreTheyNow(){
-const now=new Date();
-const d=now.getUTCFullYear()*10000+(now.getUTCMonth()+1)*100+now.getUTCDate();
-const banner=document.getElementById('where-now-banner');
-const city=document.getElementById('where-city');
-const detail=document.getElementById('where-detail');
-let c='',det='';
-if(d<20260424){c='Still in Mumbai 🇮🇳';det='Departure: 23 Apr 2:50 AM';}
-else if(d===20260424){c='In transit ✈️';det='BOM → JED → IST → Rome — arriving Rome 18:25';}
-else if(d>=20260424&&d<=20260426){c='Rome 🏛️';det='Hotel Condotti · 37 Mario De\' Fiori St';}
-else if(d===20260427){c='Rome → Florence 🚄';det='Train FR 9308 · Arriving Firenze 11:01 AM';}
-else if(d>=20260427&&d<=20260429){c='Florence 🌸';det='Ruby Bea · Piazza della Libertà 16';}
-else if(d===20260430){c='Florence → Milan 🚄';det='Train FR 9304 · Arriving Milano 10:54 AM';}
-else if(d>=20260430&&d<=20260503){c='Milan 🏙️';det='Milan Marriott Hotel · Via Washington 66';}
-else if(d===20260504){c='Heading home ✈️';det='MXP → IST → BOM';}
-else if(d===20260505){c='Arriving Mumbai 🏠';det='Landing 06:40 AM — almost home!';}
-else{c='Trip completed! 🇮🇳';det='Back home in Mumbai';}
-if(c){banner.style.display='flex';city.textContent=c;detail.textContent=det;}
+function whereAreTheyNow() {
+  const now = new Date();
+
+  // ---- TIMELINE (ALL WITH TIMEZONES) ----
+  const events = [
+    {
+      start: null,
+      end: new Date("2026-04-23T02:50:00+05:30"), // Mumbai departure
+      label: "Still in Mumbai 🇮🇳",
+      detail: "Departure: 23 Apr 2:50 AM"
+    },
+    {
+      start: new Date("2026-04-23T02:50:00+05:30"),
+      end: new Date("2026-04-24T11:05:00+03:00"), // Istanbul arrival
+      label: "In transit ✈️",
+      detail: "BOM → JED → IST"
+    },
+    {
+      start: new Date("2026-04-24T11:05:00+03:00"),
+      end: new Date("2026-04-24T16:45:00+03:00"), // next departure
+      label: "Layover in Istanbul 🇹🇷",
+      detail: "Waiting for Rome flight"
+    },
+    {
+      start: new Date("2026-04-24T16:45:00+03:00"),
+      end: new Date("2026-04-24T18:25:00+02:00"), // Rome arrival
+      label: "In transit ✈️",
+      detail: "IST → Rome — arriving 18:25"
+    },
+    {
+      start: new Date("2026-04-24T18:25:00+02:00"),
+      end: new Date("2026-04-27T09:35:00+02:00"),
+      label: "Rome 🏛️",
+      detail: "Hotel Condotti"
+    },
+    {
+      start: new Date("2026-04-27T09:35:00+02:00"),
+      end: new Date("2026-04-27T11:01:00+02:00"),
+      label: "On train 🚄",
+      detail: "Rome → Florence"
+    },
+    {
+      start: new Date("2026-04-27T11:01:00+02:00"),
+      end: new Date("2026-04-30T09:10:00+02:00"),
+      label: "Florence 🌸",
+      detail: "Ruby Bea"
+    },
+    {
+      start: new Date("2026-04-30T09:10:00+02:00"),
+      end: new Date("2026-04-30T10:54:00+02:00"),
+      label: "On train 🚄",
+      detail: "Florence → Milan"
+    },
+    {
+      start: new Date("2026-04-30T10:54:00+02:00"),
+      end: new Date("2026-05-04T10:40:00+02:00"),
+      label: "Milan 🏙️",
+      detail: "Milan Marriott Hotel"
+    },
+    {
+      start: new Date("2026-05-04T10:40:00+02:00"),
+      end: new Date("2026-05-05T06:40:00+05:30"),
+      label: "Heading home ✈️",
+      detail: "MXP → IST → BOM"
+    },
+    {
+      start: new Date("2026-05-05T06:40:00+05:30"),
+      end: null,
+      label: "Back home 🏠",
+      detail: "Arrived Mumbai"
+    }
+  ];
+
+  // ---- FIND CURRENT STATE ----
+  let current = events.find(e => {
+    const afterStart = !e.start || now >= e.start;
+    const beforeEnd = !e.end || now < e.end;
+    return afterStart && beforeEnd;
+  });
+
+  if (!current) {
+    current = {
+      label: "Trip completed! 🇮🇳",
+      detail: "Back home"
+    };
+  }
+
+  // ---- UPDATE UI ----
+  const banner = document.getElementById('where-now-banner');
+  const city = document.getElementById('where-city');
+  const detail = document.getElementById('where-detail');
+
+  banner.style.display = 'flex';
+  city.textContent = current.label;
+  detail.textContent = current.detail;
 }
 whereAreTheyNow();
 </script>
