@@ -77,10 +77,50 @@ body{font-family:'DM Sans',sans-serif;background:var(--color-background-tertiary
 .where-text .where-label{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#854F0B;font-weight:500}
 .where-text .where-val{font-size:15px;font-weight:500;color:#3C2A1B}
 .where-text .where-sub{font-size:12px;color:#854F0B;margin-top:2px}
-  .where-time {
+.where-time {
   font-size: 12px;
   color: #854F0B;
   margin-top: 4px;
+}
+  .trip-progress {
+  margin: 20px 0 10px;
+}
+
+.progress-line {
+  position: relative;
+  height: 4px;
+  background: #e8e6df;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  position: absolute;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #d85a30, #f0b27a);
+  border-radius: 10px;
+  transition: width 0.6s ease;
+}
+
+.progress-dot {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 12px;
+  height: 12px;
+  background: #d85a30;
+  border-radius: 50%;
+  box-shadow: 0 0 0 6px rgba(216, 90, 48, 0.15);
+  transition: left 0.6s ease;
+}
+
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  margin-top: 6px;
+  color: var(--color-text-secondary);
 }
 </style>
 
@@ -98,10 +138,25 @@ body{font-family:'DM Sans',sans-serif;background:var(--color-background-tertiary
 <div class="where-label">📍 Right now</div>
 <div class="where-val" id="where-city">—</div>
 <div class="where-sub" id="where-detail">—</div>
-  <div class="where-time" id="where-time"></div>
+<div class="where-time" id="where-time"></div>
 </div>
 </div>
 
+  <div class="trip-progress">
+  <div class="progress-line">
+    <div class="progress-fill" id="progress-fill"></div>
+    <div class="progress-dot" id="progress-dot"></div>
+  </div>
+
+  <div class="progress-labels">
+    <span>Mumbai</span>
+    <span>Rome</span>
+    <span>Florence</span>
+    <span>Milan</span>
+    <span>Home</span>
+  </div>
+    
+</div>
 <div class="stat-row">
 <div class="stat"><div class="stat-num">12</div><div class="stat-lbl">Days</div></div>
 <div class="stat"><div class="stat-num">3</div><div class="stat-lbl">Cities</div></div>
@@ -548,4 +603,39 @@ function whereAreTheyNow() {
   }
 }
 whereAreTheyNow();
+
+  function updateProgressBar() {
+  const now = new Date();
+
+  // Key checkpoints (same as your travel timeline)
+  const timeline = [
+    new Date("2026-04-23T02:50:00+05:30"), // depart Mumbai
+    new Date("2026-04-24T18:25:00+02:00"), // reach Rome
+    new Date("2026-04-27T11:01:00+02:00"), // reach Florence
+    new Date("2026-04-30T10:54:00+02:00"), // reach Milan
+    new Date("2026-05-05T06:40:00+05:30")  // back home
+  ];
+
+  let progress = 0;
+
+  if (now <= timeline[0]) {
+    progress = 0;
+  } else if (now >= timeline[timeline.length - 1]) {
+    progress = 100;
+  } else {
+    for (let i = 0; i < timeline.length - 1; i++) {
+      if (now >= timeline[i] && now < timeline[i + 1]) {
+        const segmentProgress =
+          (now - timeline[i]) / (timeline[i + 1] - timeline[i]);
+
+        progress = ((i + segmentProgress) / (timeline.length - 1)) * 100;
+        break;
+      }
+    }
+  }
+
+  // Apply to UI
+  document.getElementById("progress-fill").style.width = progress + "%";
+  document.getElementById("progress-dot").style.left = progress + "%";
+};
 </script>
