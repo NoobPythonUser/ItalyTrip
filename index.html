@@ -148,13 +148,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--color-background-tertiary
     <div class="progress-dot" id="progress-dot"></div>
   </div>
 
-  <div class="progress-labels">
-    <span>Mumbai</span>
-    <span>Rome</span>
-    <span>Florence</span>
-    <span>Milan</span>
-    <span>Home</span>
-  </div>
+<div class="progress-labels">
+  <span>Mumbai</span>
+  <span>Istanbul</span>
+  <span>Rome</span>
+  <span>Florence</span>
+  <span>Milan</span>
+  <span>Home</span>
+</div>
     
 </div>
 <div class="stat-row">
@@ -608,32 +609,33 @@ whereAreTheyNow();
   const now = new Date();
 
   // Key checkpoints (same as your travel timeline)
-  const timeline = [
-  new Date("2026-04-23T02:50:00+05:30"), // depart Mumbai
-  new Date("2026-04-24T11:05:00+03:00"), // reach Istanbul
-  new Date("2026-04-24T18:25:00+02:00"), // reach Rome
-  new Date("2026-04-27T11:01:00+02:00"), // Florence
-  new Date("2026-04-30T10:54:00+02:00"), // Milan
-  new Date("2026-05-05T06:40:00+05:30")  // Home
+ const timeline = [
+  new Date("2026-04-23T02:50:00+05:30"), // Mumbai departure
+  new Date("2026-04-24T11:05:00+03:00"), // Istanbul arrival
+  new Date("2026-04-24T18:25:00+02:00"), // Rome arrival
+  new Date("2026-04-27T11:01:00+02:00"), // Florence arrival
+  new Date("2026-04-30T10:54:00+02:00"), // Milan arrival
+  new Date("2026-05-05T06:40:00+05:30")  // Home arrival
 ];
 
-  let progress = 0;
+ let progress = 0;
 
-  if (now <= timeline[0]) {
-    progress = 0;
-  } else if (now >= timeline[timeline.length - 1]) {
-    progress = 100;
-  } else {
-    for (let i = 0; i < timeline.length - 1; i++) {
-      if (now >= timeline[i] && now < timeline[i + 1]) {
-        const segmentProgress =
-          (now - timeline[i]) / (timeline[i + 1] - timeline[i]);
+for (let i = 0; i < timeline.length - 1; i++) {
+  const start = timeline[i].getTime();
+  const end = timeline[i + 1].getTime();
+  const current = now.getTime();
 
-        progress = ((i + segmentProgress) / (timeline.length - 1)) * 100;
-        break;
-      }
-    }
+  if (current >= start && current < end) {
+    const segmentProgress = (current - start) / (end - start);
+    progress = ((i + segmentProgress) / (timeline.length - 1)) * 100;
+    break;
   }
+}
+
+// after last point
+if (now.getTime() >= timeline[timeline.length - 1].getTime()) {
+  progress = 100;
+}
 
   // Apply to UI
   document.getElementById("progress-fill").style.width = progress + "%";
