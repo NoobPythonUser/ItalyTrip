@@ -77,6 +77,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--color-background-tertiary
 .where-text .where-label{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#854F0B;font-weight:500}
 .where-text .where-val{font-size:15px;font-weight:500;color:#3C2A1B}
 .where-text .where-sub{font-size:12px;color:#854F0B;margin-top:2px}
+  .where-time {
+  font-size: 12px;
+  color: #854F0B;
+  margin-top: 4px;
+}
 </style>
 
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -93,6 +98,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--color-background-tertiary
 <div class="where-label">📍 Right now</div>
 <div class="where-val" id="where-city">—</div>
 <div class="where-sub" id="where-detail">—</div>
+  <div class="where-time" id="where-time"></div>
 </div>
 </div>
 
@@ -522,6 +528,24 @@ function whereAreTheyNow() {
   banner.style.display = 'flex';
   city.textContent = current.label;
   detail.textContent = current.detail;
+}
+  function updateLiveTime() {
+  const now = new Date();
+
+  // Show time in Rome (recommended)
+  const romeTime = new Date(
+    now.toLocaleString("en-US", { timeZone: "Europe/Rome" })
+  );
+
+  const timeStr = romeTime.toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+
+  const el = document.getElementById("where-time");
+  if (el) {
+    el.textContent = "Local time: " + timeStr + " (Rome)";
+  }
 }
 whereAreTheyNow();
 </script>
