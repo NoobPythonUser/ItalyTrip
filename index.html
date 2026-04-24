@@ -648,4 +648,8 @@ whereAreTheyNow();
   fill.style.width = progress + "%";
   dot.style.left = progress + "%";
 };
+  document.addEventListener("DOMContentLoaded", () => {
+  updateProgressBar();
+  setInterval(updateProgressBar, 60000); // every 1 min
+});
 </script>
